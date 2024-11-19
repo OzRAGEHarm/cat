@@ -1,7 +1,9 @@
-name: Deploy to Workspaces
+name: Deploy to GitHub Pages
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
 
 jobs:
   deploy:
@@ -9,6 +11,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: recursive  # Important for this repo due to submodules
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -16,7 +20,25 @@ jobs:
           node-version: '16'
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          git submodule update --init --recursive
 
-      - name: Deploy to Workspaces
-        run: node .
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./static  # Based on repository structure
+          keep_files: true  # Preserve existing files
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: ${{ github.event.head_commit.message }}
+
+      - name: Start server
+        run: npm start &
+        
+      - name: Wait for server to start
+        run: sleep 10  # Give the server time to initialize
