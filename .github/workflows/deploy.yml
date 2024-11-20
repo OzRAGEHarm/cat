@@ -1,44 +1,32 @@
 name: Deploy to GitHub Pages
 
 on:
-  workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main  # Change this to your default branch if it's not 'main'
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive  # Important for this repo due to submodules
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: '14'  # Specify the Node.js version you want to use
 
       - name: Install dependencies
-        run: |
-          npm install
-          git submodule update --init --recursive
+        run: npm install
 
-      - name: Build project
-        run: npm run build
+      - name: Build the project
+        run: npm run build  # Adjust this command if your build command is different
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./static  # Based on repository structure
-          keep_files: true  # Preserve existing files
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: ${{ github.event.head_commit.message }}
-
-      - name: Start server
-        run: npm start &
-        
-      - name: Wait for server to start
-        run: sleep 10  # Give the server time to initialize
+          publish_dir: ./dist  # Adjust this to the directory where your built files are located
+          publish_branch: gh-pages  # The branch to which you want to deploy
