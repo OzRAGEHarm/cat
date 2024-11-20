@@ -6,7 +6,7 @@
   "name": "uv-app",
   "version": "1.0.0",
   "description": "Ultraviolet instance",
-  "main": "index.js"
+  "main": "index.js",
   "scripts": {
     "build": "npm install && git submodule update --init --recursive",
     "start": "node index.mjs",
