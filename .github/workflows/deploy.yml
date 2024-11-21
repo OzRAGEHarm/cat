@@ -1,12 +1,12 @@
-name: Deploy to GitHub Pages
+name: Deploy Node.js Web Proxy
 
 on:
   push:
     branches:
-      - main  # Change this to your default branch if it's not 'main'
+      - main  # Change this to your default branch if necessary
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,17 +16,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'  # Specify the Node.js version you want to use
+          node-version: '14'  # Specify your Node.js version
 
       - name: Install dependencies
         run: npm install
 
-      - name: Build the project
-        run: npm run build  # Adjust this command if your build command is different
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist  # Adjust this to the directory where your built files are located
-          publish_branch: gh-pages  # The branch to which you want to deploy
+      - name: Start the application
+        run: |
+          nohup npm start &
+          sleep 5  # Wait a few seconds for the server to start
