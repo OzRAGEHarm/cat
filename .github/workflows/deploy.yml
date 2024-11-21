@@ -19,6 +19,4 @@ jobs:
           node-version: '14'  # Specify your Node.js version
 
       - name: Start the application
-        run: |
-          nohup npm start &
-          sleep 5  # Wait a few seconds for the server to start
+        run: node .
